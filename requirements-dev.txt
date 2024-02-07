@@ -2,3 +2,4 @@ pytest
 respx
 ruff
 mypy
+coverage
