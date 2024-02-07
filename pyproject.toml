@@ -40,3 +40,21 @@ indent-style = "space"
 
 [tool.mypy]
 no_implicit_optional = true
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_also = [
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise NotImplementedError",
+
+    ]
+ignore_errors = true
+skip_covered = true
+show_missing = true
+fail_under = 95
