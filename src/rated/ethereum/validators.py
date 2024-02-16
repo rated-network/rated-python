@@ -24,6 +24,15 @@ class Validator(APIResource):
     path = "/validators"
 
     def metadata(self, index_or_pubkey: int | str) -> ValidatorMetadata:
+        """
+        Reverse lookup into the entity-to-validator index mappings that live in the RatedDB
+
+        Args:
+            index_or_pubkey: Validator index or pubkey
+
+        Returns:
+            Metadata about the validator
+        """
         validator = self.client.get(f"{self.resource_path}/{index_or_pubkey}")
         return json_to_instance(validator, ValidatorMetadata)
 
@@ -34,6 +43,17 @@ class Validator(APIResource):
         apr_type: AprType = AprType.BACKWARD,
         time_window: TimeWindow = TimeWindow.ONE_DAY,
     ) -> ValidatorAPR:
+        """
+        Historical data on the returns of a validator index
+
+        Args:
+            index_or_pubkey: Validator index or pubkey
+            apr_type: Direction of flow
+            time_window: The time window of aggregation
+
+        Returns:
+            APR %
+        """
         params = {"aprType": apr_type.value, "window": time_window.value}
         apr = self.client.get(
             f"{self.resource_path}/{index_or_pubkey}/apr",
@@ -49,6 +69,18 @@ class Validator(APIResource):
         size: int | None = None,
         follow_next: bool = False,
     ) -> Iterator[ValidatorEffectiveness]:
+        """
+        Historical performance of a single validator index
+
+        Args:
+            index_or_pubkey: Validator index or pubkey
+            from_day: Starting day
+            size: Number of results included per page
+            follow_next: Whether to follow pagination or not
+
+        Yields:
+            Effectiveness metrics
+        """
         from_: str | int | date | None = from_day
         if from_ is not None and isinstance(from_, date):
             from_ = from_.isoformat()
@@ -68,16 +100,31 @@ class Validators(APIResource):
 
     def metadata(
         self,
-        from_: int = 0,
+        *,
+        from_index: int = 0,
         size: int = 100,
         operators_ids: List[str] | None = None,
         withdrawal_address: str | None = None,
         id_type: IdType = IdType.NODE_OPERATOR,
         follow_next: bool = False,
     ) -> Iterator[ValidatorMetadata]:
+        """
+        Allows users to request metadata for a group of validators that map to the same operator or pool
+
+        Args:
+            from_index: Starting validator index
+            size: Number of results included per page
+            operators_ids: An array of entities names you want to filter by
+            withdrawal_address: Filter by the withdrawal address
+            id_type: The type of entity class you would like to filter by
+            follow_next: Whether to follow pagination or not
+
+        Yields:
+            Validator metadata
+        """
         url = f"{self.resource_path}"
         params: Dict[str, Any] = {
-            "from": from_,
+            "from": from_index,
             "size": size,
             "operators_ids": operators_ids,
             "withdrawal_address": withdrawal_address,
@@ -102,6 +149,24 @@ class Validators(APIResource):
         group_by: ValidatorsEffectivenessGroupBy = ValidatorsEffectivenessGroupBy.VALIDATOR,
         follow_next: bool = False,
     ) -> Iterator[ValidatorEffectiveness]:
+        """
+        Enables the aggregation of all the metrics that live under Validators across an arbitrary number of validator
+        indices or pubkeys
+
+        Args:
+            pubkeys: Array of pubkeys
+            indices: Array of indices
+            from_day: Start day
+            to_day: End day
+            filter_type: Type of filter to apply to from
+            size: Number of results included per page
+            granularity: The size of time increments you are looking to query
+            group_by: Time window or validator; we either group by validator index or across time
+            follow_next: Whether to follow pagination or not
+
+        Yields:
+            Effectiveness metrics
+        """
         from_: str | int | date | None = from_day
         if from_ is not None and isinstance(from_, date):
             from_ = from_.isoformat()
@@ -135,6 +200,16 @@ class Validators(APIResource):
         )
 
     def report(self, validators: Sequence[str], *, pool_tag: str | None = None) -> int:
+        """
+        Gateway for node operators to "upload" their sets
+
+        Args:
+            validators: Array of validator pubkeys associated with the node operator
+            pool_tag: Pool name as they appear in the Rated Explorer
+
+        Returns:
+            Number of accepted validators
+        """
         url = "/v0/selfReports/validators"
         data = {"validators": validators, "poolTag": pool_tag}
         res = self.client.post(url, json=data)

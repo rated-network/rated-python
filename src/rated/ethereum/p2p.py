@@ -12,12 +12,25 @@ from rated.ethereum.enums import DistributionType
 
 
 class P2P(APIResource):
+    """
+    Querying into aggregated stats on Ethereum's peer-to-peer networking layer
+    """
+
     path = "/p2p"
 
     def geographical_distribution(
         self,
         distribution_type: DistributionType = DistributionType.PROS,
     ) -> Iterator[P2PGeographicalDistribution]:
+        """
+        Retrieves a list of countries and the respective share of the validator set based in those countries
+
+        Args:
+            distribution_type: The type of distribution
+
+        Yields:
+            Geographical distribution
+        """
         url = f"{self.resource_path}/geographical"
         params = {"distType": distribution_type.value}
         data = self.client.get(url, params=params)
@@ -32,6 +45,18 @@ class P2P(APIResource):
         distribution_type: DistributionType = DistributionType.PROS,
         follow_next: bool = False,
     ) -> Iterator[P2PHostingProviderDistribution]:
+        """
+        Retrieves a list of hosting providers and their respective share of the validator set
+
+        Args:
+            from_rank:
+            size: Number of results included per page
+            distribution_type: The type of distribution
+            follow_next: Whether to follow pagination or not
+
+        Yields:
+            Hosting provider distribution
+        """
         url = f"{self.resource_path}/hostingProvider"
         params = {"from": from_rank, "size": size, "distType": distribution_type.value}
         return self.client.yield_paginated_results(
