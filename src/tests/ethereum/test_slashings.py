@@ -207,10 +207,8 @@ def test_slashings_for_validator_ok(respx_mock, eth_mainnet):
         )
     )
 
-    penalties = eth_mainnet.slashings.for_validator(20075)
-    results = list(penalties)
+    penalty = eth_mainnet.slashings.for_validator(20075)
 
-    assert len(results) == 1
-    assert results[0].validator_index == 20075
-    assert results[0].slashing_epoch == 208
-    assert results[0].slashing_penalties == 606851401
+    assert penalty.validator_index == 20075
+    assert penalty.slashing_epoch == 208
+    assert penalty.slashing_penalties == 606851401

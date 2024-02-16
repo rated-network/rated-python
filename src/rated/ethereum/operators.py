@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Any, Dict, Iterator, List
+from typing import Any, Dict, Iterator
 
 from rated.base import APIResource
 from rated.client import json_to_instance
@@ -27,9 +27,23 @@ from rated.ethereum.enums import (
 
 
 class Operator(APIResource):
+    """Querying into pre-materialized operator groupings."""
+
     path = "/operators"
 
-    def metadata(self, operator_id, *, id_type: IdType = IdType.NONE) -> OperatorType:
+    def metadata(
+        self, operator_id: str, *, id_type: IdType = IdType.NONE
+    ) -> OperatorType:
+        """
+        Retrieve profile information on specific operators.
+
+        Args:
+            operator_id: The name of the entity in question
+            id_type: The type of entity class
+
+        Returns:
+            Operator metadata.
+        """
         url: str = f"{self.resource_path}/{operator_id}"
         params: Dict[str, Any] = {"idType": id_type.value}
         operator = self.client.get(url, params=params)
@@ -37,16 +51,32 @@ class Operator(APIResource):
 
     def effectiveness(
         self,
-        operator_id,
+        operator_id: str,
         *,
         id_type: IdType = IdType.NONE,
         from_day: int | date | None = None,
         size: int | None = None,
         granularity: Granularity = Granularity.DAY,
         filter_type: FilterType = FilterType.DAY,
-        include: List[str] | None = None,
         follow_next: bool = False,
     ) -> Iterator[OperatorEffectiveness]:
+        """
+        Historical performance of a single operator.
+        This includes rewards (aggregate and granular), performance (effectiveness and its components),
+        slashing history and much more.
+
+        Args:
+            operator_id: The name of the entity in question
+            id_type: The type of entity class
+            from_day: Start day
+            size: Number of results included per page
+            granularity:T he size of time increments you are looking to query
+            filter_type: Hour, day and datetime
+            follow_next: Whether to follow pagination or not
+
+        Yields:
+            Operator Effectiveness
+        """
         url: str = f"{self.resource_path}/{operator_id}/effectiveness"
         params: Dict[str, Any] = {
             "idType": id_type.value,
@@ -54,7 +84,6 @@ class Operator(APIResource):
             "size": size,
             "granularity": granularity.value,
             "filterType": filter_type.value,
-            "include": include,
         }
         return self.client.yield_paginated_results(
             url,
@@ -65,10 +94,20 @@ class Operator(APIResource):
 
     def clients(
         self,
-        operator_id,
+        operator_id: str,
         *,
         id_type: IdType = IdType.NONE,
     ) -> Iterator[ClientPercentage]:
+        """
+        Consensus client distribution
+
+        Args:
+            operator_id: The name of the entity in question
+            id_type: The type of entity class
+
+        Yields:
+            Clients percentages
+        """
         url: str = f"{self.resource_path}/{operator_id}/clients"
         params: Dict[str, Any] = {"idType": id_type.value}
         data = self.client.get(url, params=params)
@@ -77,11 +116,22 @@ class Operator(APIResource):
 
     def relayers(
         self,
-        operator_id,
+        operator_id: str,
         *,
         id_type: IdType = IdType.NONE,
         time_window: TimeWindow = TimeWindow.THIRTY_DAYS,
     ) -> Iterator[RelayerPercentage]:
+        """
+        Get information relating to an entity's historical distribution of relays they have procured blocks from.
+
+        Args:
+            operator_id: The name of the entity in question
+            id_type: The type of entity class
+            time_window: The time window of aggregation
+
+        Yields:
+            Relayer Percentages
+        """
         url: str = f"{self.resource_path}/{operator_id}/relayers"
         params: Dict[str, Any] = {"idType": id_type.value, "window": time_window.value}
         data = self.client.get(url, params=params)
@@ -90,12 +140,24 @@ class Operator(APIResource):
 
     def apr(
         self,
-        operator_id,
+        operator_id: str,
         *,
         id_type: IdType = IdType.NONE,
         time_window: TimeWindow,
         apr_type: AprType = AprType.BACKWARD,
     ) -> OperatorApr:
+        """
+        Retrieve historical data on the returns any of the entities supported have recorded.
+
+        Args:
+            operator_id: The name of the entity in question
+            id_type: The type of entity class
+            time_window: The time window of aggregation
+            apr_type: Direction of flow
+
+        Returns:
+            Entity APR %
+        """
         url: str = f"{self.resource_path}/{operator_id}/apr"
         params: Dict[str, Any] = {
             "idType": id_type.value,
@@ -107,11 +169,22 @@ class Operator(APIResource):
 
     def summary(
         self,
-        operator_id,
+        operator_id: str,
         *,
         id_type: IdType = IdType.NONE,
         time_window: TimeWindow,
     ) -> OperatorSummary:
+        """
+        Retrieve summary statistics for a specific operator
+
+        Args:
+            operator_id: The name of the entity in question
+            id_type: The type of entity class
+            time_window: The time window of aggregation
+
+        Returns:
+            Operator summary
+        """
         url: str = f"{self.resource_path}/{operator_id}/summary"
         params: Dict[str, Any] = {
             "idType": id_type.value,
@@ -122,12 +195,26 @@ class Operator(APIResource):
 
     def stake_movement(
         self,
-        operator_id,
+        operator_id: str,
         *,
         id_type: IdType = IdType.NONE,
         stake_action: StakeAction = StakeAction.ACTIVATION,
         time_window: TimeWindow,
     ) -> Iterator[OperatorStakeMovement]:
+        """
+        Retrieve data on the activation and exit activity of a specific pre-materialized view
+        (e.g. operator, deposit address, etc.)
+
+        Args:
+            operator_id: The name of the entity in question
+            id_type: The type of entity class
+            stake_action: Direction of flow
+            time_window: The time window of aggregation
+
+        Yields:
+            Activations and withdrawals state and status
+
+        """
         url: str = f"{self.resource_path}/{operator_id}/stakeMovement"
         params: Dict[str, Any] = {
             "idType": id_type.value,
@@ -148,6 +235,20 @@ class Operators(APIResource):
         id_type: IdType = IdType.NONE,
         time_window: TimeWindow,
     ) -> Iterator[Percentile]:
+        """
+        Retrieve data of entities with their respective percentile rank score, according to their effectiveness rating.
+
+        Args:
+            id_type: The type of entity class
+            time_window: The time window of aggregation
+
+        Yields:
+            Percentiles
+
+        See Also:
+            https://docs.rated.network/methodologies/ethereum-beacon-chain/rating-percentiles
+
+        """
         url: str = f"{self.resource_path}/percentiles"
         params: Dict[str, Any] = {
             "idType": id_type.value,
@@ -168,6 +269,21 @@ class Operators(APIResource):
         size: int | None = None,
         follow_next: bool = False,
     ) -> Iterator[OperatorSummary]:
+        """
+        Summarizes statistics for all the operators Rated has pre-materialized views on
+
+        Args:
+            time_window: The time window of aggregation
+            pool_type: Type of Pool
+            id_type: The type of entity class
+            parent_id: Specifying a pool or node operator so that the response is focused on the Pool Shares of said entity
+            from_day: Start day
+            size: Number of results included per page
+            follow_next: Whether to follow pagination or not
+
+        Yields:
+
+        """
         url: str = f"{self.resource_path}"
         params: Dict[str, Any] = {
             "poolType": pool_type.value,

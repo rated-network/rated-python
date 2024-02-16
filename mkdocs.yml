@@ -1,0 +1,14 @@
+site_name: Rated Python SDK
+
+theme:
+  name: "material"
+
+plugins:
+  - mkdocstrings
+
+nav:
+  - Introduction: index.md
+  - Reference:
+    - Base: base.md
+    - Client: client.md
+    - Ethereum: ethereum.md

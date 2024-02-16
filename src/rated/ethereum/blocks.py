@@ -8,6 +8,11 @@ from rated.ethereum.datatypes import Block
 
 
 class Blocks(APIResource):
+    """
+    Blocks allows one to dig into the individual slots and blocks in Ethereum since the Merge.
+    Metrics include validator rewards from the consensus and execution layers, MEV data, and missed reward estimates.
+    """
+
     path = "/blocks"
 
     def all(
@@ -17,6 +22,17 @@ class Blocks(APIResource):
         size: int | None = None,
         follow_next: bool = False,
     ) -> Iterator[Block]:
+        """
+        Get all blocks
+
+        Args:
+            from_slot: Start slot
+            size: Number of results included per page
+            follow_next: Whether to follow pagination or not
+
+        Yields:
+            An iterator over all blocks
+        """
         params: Dict[str, Any] = {"from": from_slot, "size": size}
         return self.client.yield_paginated_results(
             self.resource_path,
@@ -26,5 +42,14 @@ class Blocks(APIResource):
         )
 
     def by_slot(self, slot: int) -> Block:
+        """
+        Get a block by consensus slot number
+
+        Args:
+            slot: Consensus slot number
+
+        Returns:
+            A single block
+        """
         data = self.client.get(f"{self.resource_path}/{slot}")
         return json_to_instance(data, Block)
