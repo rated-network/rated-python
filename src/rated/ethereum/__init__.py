@@ -1,5 +1,5 @@
 from rated.base import Network
-from rated.ethereum.blocks import Blocks
+from rated.ethereum.blocks import Block, Blocks
 from rated.ethereum.operators import Operator, Operators
 from rated.ethereum.p2p import P2P
 from rated.ethereum.slashings import Slashings
@@ -15,6 +15,10 @@ HOLESKY = "holesky"
 class Ethereum(Network):
     path = "/v0/eth"
     supported_networks = [MAINNET, HOLESKY]
+
+    @property
+    def block(self):
+        return Block(self)
 
     @property
     def blocks(self):

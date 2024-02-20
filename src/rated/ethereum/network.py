@@ -23,8 +23,19 @@ class Network(APIResource):
         """
         Summarizes key performance statistics for all the whole network, for the current calendar day.
 
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> network_stats = eth.network.stats()
+            >>> for stat in network_stats:
+            >>>     print(f"{stat.avg_uptime = }")
+
         Yields:
-            An iterator over all results
+            Network performance stats
         """
         data = self.client.get(f"{self.resource_path}/stats")
         for item in data:
@@ -34,8 +45,19 @@ class Network(APIResource):
         """
         Summarizes key statistics for the whole network.
 
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> overview = eth.network.overview()
+            >>> for values in overview:
+            >>>     print(f"{values.activating_validators = }")
+
         Yields:
-            An iterator over all results
+            Statistics summary
         """
         data = self.client.get(f"{self.resource_path}/overview")
         for item in data:
@@ -45,8 +67,19 @@ class Network(APIResource):
         """
         Summarizes activations and exits for all the whole network.
 
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> capacity = eth.network.capacity()
+            >>> for cap in capacity:
+            >>>     print(f"{cap.churn_limit = }")
+
         Yields:
-            An iterator over all results
+            Activations and exits summary
         """
         data = self.client.get(f"{self.resource_path}/capacity")
         for item in data:
@@ -54,11 +87,23 @@ class Network(APIResource):
 
     def capacity_pool(
         self,
+        *,
         stake_action: StakeAction = StakeAction.ACTIVATION,
         time_window: TimeWindow = TimeWindow.ONE_DAY,
     ) -> Iterator[NetworkChurnCapacityPool]:
         """
         Summarizes activations and exits, broken down by staking pool.
+
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> capacity_pool = eth.network.capacity_pool(time_window=TimeWindow.THIRTY_DAYS)
+            >>> for cap in capacity_pool:
+            >>>     print(f"{cap.churn_limit = }")
 
         Args:
             stake_action: Direction of flow. This can be either of activation or exit.

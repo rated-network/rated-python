@@ -4,7 +4,7 @@ from typing import Iterator, Any, Dict
 
 from rated.base import APIResource
 from rated.client import json_to_instance
-from rated.ethereum.datatypes import Block
+from rated.ethereum.datatypes import Block as EthBlock
 
 
 class Blocks(APIResource):
@@ -21,9 +21,20 @@ class Blocks(APIResource):
         from_slot: int | None = None,
         size: int | None = None,
         follow_next: bool = False,
-    ) -> Iterator[Block]:
+    ) -> Iterator[EthBlock]:
         """
         Get all blocks
+
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> blocks = eth.blocks.all(from_slot=500, size=10)
+            >>> for block in blocks:
+            >>>     print(f"{block.total_rewards = }")
 
         Args:
             from_slot: Start slot
@@ -37,13 +48,27 @@ class Blocks(APIResource):
         return self.client.yield_paginated_results(
             self.resource_path,
             params=params,
-            cls=Block,
+            cls=EthBlock,
             follow_next=follow_next,
         )
 
-    def by_slot(self, slot: int) -> Block:
+
+class Block(APIResource):
+    path = "/blocks"
+
+    def get(self, slot: int) -> EthBlock:
         """
         Get a block by consensus slot number
+
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> block = eth.blocks.get(500)
+            >>> print(f"{block.total_rewards = }")
 
         Args:
             slot: Consensus slot number
@@ -52,4 +77,4 @@ class Blocks(APIResource):
             A single block
         """
         data = self.client.get(f"{self.resource_path}/{slot}")
-        return json_to_instance(data, Block)
+        return json_to_instance(data, EthBlock)
