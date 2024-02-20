@@ -28,6 +28,17 @@ class Slashings(APIResource):
         Lists of all slashed validators, their index, pubkey, slashing epoch, withdrawable epoch,
         balance before slashing, balance before withdrawal, and the penalties incurred from getting slashed.
 
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> slashings_overview = eth.slashings.overview()
+            >>> for slashing in slashings_overview:
+            >>>     print(f"{slashing.validators_slashed = }")
+
         Yields:
             Slashing overview
         """
@@ -48,6 +59,17 @@ class Slashings(APIResource):
         (1) according to how many times their validators have been slashed or
         (2) how many times their validators have proposed a block that included slashing report
            (i.e. letting the network know a slashing incident has occurred)
+
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> leaderboard = eth.slashings.leaderboard(from_rank=1)
+            >>> for l in leaderboard:
+            >>>     print(f"{l.id = }, {l.slashes = }, {l.validator_count = }")
 
         Args:
             from_rank: Start from ranking
@@ -71,6 +93,17 @@ class Slashings(APIResource):
         Retrieves the frequency of slashing incidents for validators, grouped by different operator cohort sizes,
         from solo to professional operators with more than 5,000 validator keys.
 
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> cohorts = eth.slashings.cohorts()
+            >>> for cohort in cohorts:
+            >>>     print(f"{cohort.cohort = }, {cohort.last_six_months = }")
+
         Yield:
             Cohorts
         """
@@ -82,6 +115,17 @@ class Slashings(APIResource):
     def timeseries(self) -> Iterator[SlashingTimeInterval]:
         """
         Time series of slashing incidents
+
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> intervals = eth.slashings.timeseries()
+            >>> for interval in intervals:
+            >>>     print(f"{interval.month = }, {interval.validators_slashed = }")
 
         Yields:
             Slashing time series
@@ -101,6 +145,19 @@ class Slashings(APIResource):
         """
         All slashed validators, their index, pubkey, slashing epoch, withdrawable epoch, balance before slashing,
         balance before withdrawal, and the penalties incurred from getting slashed
+
+        Examples:
+            >>> from datetime import date
+            >>>
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> penalties = eth.slashings.penalties(from_day=date(2023, 10, 1), size=10)
+            >>> for penalty in penalties:
+            >>>     print(f"{penalty.validator_pubkey = }, {penalty.slashing_penalties = }")
 
         Args:
             from_day: Starting day
@@ -129,6 +186,16 @@ class Slashings(APIResource):
     ) -> SlashingPenalty:
         """
         Information about a single slashed validator, queried either by the validator's index or their pubkey.
+
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> penalties = eth.slashings.for_validator()
+            >>> print(f"{penalties.slashing_epoch = }, {penalties.slashing_penalties = }")
 
         Args:
             validator_index_or_pubkey: Validator index or pubkey

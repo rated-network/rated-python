@@ -25,6 +25,17 @@ class P2P(APIResource):
         """
         Retrieves a list of countries and the respective share of the validator set based in those countries
 
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> geo_dist = eth.p2p.geographical_distribution()
+            >>> for dist in geo_dist:
+            >>>     print(f"{dist.country = }, {dist.validator_share = }")
+
         Args:
             distribution_type: The type of distribution
 
@@ -47,6 +58,17 @@ class P2P(APIResource):
     ) -> Iterator[P2PHostingProviderDistribution]:
         """
         Retrieves a list of hosting providers and their respective share of the validator set
+
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> provider_dist = eth.p2p.hosting_provider_distribution(size=5)
+            >>> for dist in provider_dist:
+            >>>     print(f"{dist.hosting_provider = }, {dist.validator_share = }")
 
         Args:
             from_rank:

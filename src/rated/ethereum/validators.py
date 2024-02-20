@@ -27,6 +27,16 @@ class Validator(APIResource):
         """
         Reverse lookup into the entity-to-validator index mappings that live in the RatedDB
 
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> metadata = eth.validator.metadata(560000)
+            >>> print(f"{metadata.validator_pubkey = }, {metadata.deposit_addresses = }")
+
         Args:
             index_or_pubkey: Validator index or pubkey
 
@@ -45,6 +55,16 @@ class Validator(APIResource):
     ) -> ValidatorAPR:
         """
         Historical data on the returns of a validator index
+
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> validator_apr = eth.validator.apr(560000, time_window=TimeWindow.THIRTY_DAYS)
+            >>> print(f"{validator_apr.validator_index = }, {validator_apr.percentage = }%")
 
         Args:
             index_or_pubkey: Validator index or pubkey
@@ -71,6 +91,17 @@ class Validator(APIResource):
     ) -> Iterator[ValidatorEffectiveness]:
         """
         Historical performance of a single validator index
+
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> effectiveness = eth.validator.effectiveness(560000, from_day=795)
+            >>> for eff in effectiveness:
+            >>>     print(f"{eff.validator_index = }, {eff.validator_effectiveness = }")
 
         Args:
             index_or_pubkey: Validator index or pubkey
@@ -119,6 +150,17 @@ class Validators(APIResource):
             id_type: The type of entity class you would like to filter by
             follow_next: Whether to follow pagination or not
 
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> metadata = eth.validators.metadata(operators_ids=["Lido", "Kiln"])
+            >>> for m in metadata:
+            >>>     print(f"{m.validator_pubkey = }, {m.deposit_addresses = }, {m.node_operators = }")
+
         Yields:
             Validator metadata
         """
@@ -139,6 +181,7 @@ class Validators(APIResource):
 
     def effectiveness(
         self,
+        *,
         pubkeys: List[str] | None = None,
         indices: List[int] | None = None,
         from_day: int | date | None = None,
@@ -152,6 +195,17 @@ class Validators(APIResource):
         """
         Enables the aggregation of all the metrics that live under Validators across an arbitrary number of validator
         indices or pubkeys
+
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> effectiveness = eth.validators.effectiveness(indices=[500, 501, 502], from_day=795)
+            >>> for eff in effectiveness:
+            >>>     print(f"{eff.validator_index = }, {eff.validator_effectiveness = }")
 
         Args:
             pubkeys: Array of pubkeys
@@ -202,6 +256,15 @@ class Validators(APIResource):
     def report(self, validators: Sequence[str], *, pool_tag: str | None = None) -> int:
         """
         Gateway for node operators to "upload" their sets
+
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> validator_count = eth.validators.report(["0x...", "0x...", ...], pool_tag="ACME")
 
         Args:
             validators: Array of validator pubkeys associated with the node operator

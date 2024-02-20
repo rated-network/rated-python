@@ -69,7 +69,7 @@ def test_blocks_all_ok_dont_follow_next(respx_mock, eth_mainnet):
     assert results[0].total_transactions == 156
 
 
-def test_blocks_by_slot_ok(respx_mock, eth_mainnet):
+def test_block_by_slot_ok(respx_mock, eth_mainnet):
     respx_mock.get("https://api.rated.network/v0/eth/blocks/7502102").mock(
         return_value=httpx.Response(
             http.HTTPStatus.OK,
@@ -114,7 +114,7 @@ def test_blocks_by_slot_ok(respx_mock, eth_mainnet):
         )
     )
 
-    block = eth_mainnet.blocks.by_slot(7502102)
+    block = eth_mainnet.block.get(7502102)
 
     assert block.total_rewards == 76277932
     assert block.consensus_slot == 7502102

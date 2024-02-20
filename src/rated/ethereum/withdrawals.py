@@ -24,6 +24,17 @@ class Withdrawals(APIResource):
         """
         Retrieve information about the expectation of a withdrawal fulfilment, on a per validator index level
 
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> withdrawals = eth.withdrawals.by_operator("Lido", from_day=795)
+            >>> for w in withdrawals:
+            >>>     print(f"{w.withdrawal_slot = }, {w.withdrawable_amount = }")
+
         Args:
             operator_id: The name of the entity in question
             from_day: Starting day
@@ -49,6 +60,17 @@ class Withdrawals(APIResource):
     def by_slot(self, slot: int) -> Iterator[Withdrawal]:
         """
         Returns all the validators that are expected to withdraw by slot
+
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> withdrawals = eth.withdrawals.by_slot(5000)
+            >>> for w in withdrawals:
+            >>>     print(f"{w.withdrawal_slot = }, {w.id = }, {w.withdrawable_amount = }")
 
         Args:
             slot: Withdrawal slot number
