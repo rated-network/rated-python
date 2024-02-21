@@ -36,10 +36,11 @@ def check_for_empty_query_params(request: httpx.Request):
 
 
 def raise_on_4xx_5xx(response: httpx.Response):
-    try:
-        response.raise_for_status()
-    except httpx.HTTPError:
-        raise RatedApiError(response)
+    if not response.is_redirect:
+        try:
+            response.raise_for_status()
+        except httpx.HTTPError:
+            raise RatedApiError(response)
 
 
 class Client:

@@ -67,7 +67,7 @@ class Block(APIResource):
             >>> RATED_KEY = "ey..."
             >>> r = Rated(RATED_KEY)
             >>> eth = r.ethereum(network=MAINNET)
-            >>> block = eth.blocks.get(500)
+            >>> block = eth.block.get(500)
             >>> print(f"{block.total_rewards = }")
 
         Args:

@@ -188,7 +188,7 @@ class Validators(APIResource):
         to_day: Union[int, date] | None = None,
         filter_type: FilterType = FilterType.DAY,
         size: int = 10,
-        granularity: Granularity = Granularity.NONE,
+        granularity: Granularity | None = None,
         group_by: ValidatorsEffectivenessGroupBy = ValidatorsEffectivenessGroupBy.VALIDATOR,
         follow_next: bool = False,
     ) -> Iterator[ValidatorEffectiveness]:
@@ -242,7 +242,7 @@ class Validators(APIResource):
             "to": to_,
             "filterType": filter_type.value,
             "size": size,
-            "granularity": granularity.value,
+            "granularity": granularity and granularity.value or None,
             "groupBy": group_by.value,
         }
         url = f"{self.resource_path}/effectiveness"

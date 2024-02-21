@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, InitVar
 from datetime import datetime, date
 from typing import List, Dict, Any
 
@@ -23,7 +23,6 @@ class ValidatorMetadata:
 
 @dataclass
 class ValidatorAPR:
-    validator_index: int
     id_type: str
     time_window: str
     apr_type: str
@@ -32,11 +31,17 @@ class ValidatorAPR:
     percentage_execution: float
     active_stake: float
     active_validators: int
+    id: InitVar[int]
+    validator_index: int | None = None
+
+    def __post_init__(self, id: int):
+        self.validator_index = id
 
 
 @dataclass
 class ValidatorEffectiveness:
     validator_index: int | None = None
+    validator_pubkey: str | None = None
     total_attestations: int | None = None
     total_unique_attestations: int | None = None
     sum_correct_head: int | None = None
