@@ -18,7 +18,7 @@ def test_validator_apr_response_ok(respx_mock, eth_mainnet):
         return_value=httpx.Response(
             200,
             json={
-                "validatorIndex": 1000,
+                "id": 1000,
                 "idType": "validator",
                 "timeWindow": "all",
                 "aprType": "backward",

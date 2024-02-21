@@ -31,42 +31,11 @@ class Operator(APIResource):
 
     path = "/operators"
 
-    def metadata(
-        self,
-        operator_id: str,
-        *,
-        id_type: IdType = IdType.NONE,
-    ) -> OperatorType:
-        """
-        Retrieve profile information on specific operators.
-
-        Examples:
-            >>> from rated import Rated
-            >>> from rated.ethereum import MAINNET
-            >>>
-            >>> RATED_KEY = "ey..."
-            >>> r = Rated(RATED_KEY)
-            >>> eth = r.ethereum(network=MAINNET)
-            >>> op = eth.operator.metadata("Lido")
-            >>> print(f"{op.node_operator_count = }")
-
-        Args:
-            operator_id: The name of the entity in question
-            id_type: The type of entity class
-
-        Returns:
-            Operator metadata.
-        """
-        url: str = f"{self.resource_path}/{operator_id}"
-        params: Dict[str, Any] = {"idType": id_type.value}
-        operator = self.client.get(url, params=params)
-        return json_to_instance(operator, OperatorType)
-
     def effectiveness(
         self,
         operator_id: str,
+        id_type: IdType,
         *,
-        id_type: IdType = IdType.NONE,
         from_day: int | date | None = None,
         size: int | None = None,
         granularity: Granularity = Granularity.DAY,
@@ -85,7 +54,7 @@ class Operator(APIResource):
             >>> RATED_KEY = "ey..."
             >>> r = Rated(RATED_KEY)
             >>> eth = r.ethereum(network=MAINNET)
-            >>> effectiveness = eth.operator.effectiveness("Lido", from_day=795, size=10)
+            >>> effectiveness = eth.operator.effectiveness("Lido", id_type=IdType.POOL, from_day=795, size=10)
             >>> for eff in effectiveness:
             >>>     print(f"{eff.avg_validator_effectiveness = }, {eff.day = }")
 
@@ -116,12 +85,33 @@ class Operator(APIResource):
             follow_next=follow_next,
         )
 
-    def clients(
-        self,
-        operator_id: str,
-        *,
-        id_type: IdType = IdType.NONE,
-    ) -> Iterator[ClientPercentage]:
+    def metadata(self, operator_id: str, id_type: IdType) -> OperatorType:
+        """
+        Retrieve profile information on specific operators.
+
+        Examples:
+            >>> from rated import Rated
+            >>> from rated.ethereum import MAINNET
+            >>>
+            >>> RATED_KEY = "ey..."
+            >>> r = Rated(RATED_KEY)
+            >>> eth = r.ethereum(network=MAINNET)
+            >>> op = eth.operator.metadata("Lido", id_type=IdType.POOL)
+            >>> print(f"{op.node_operator_count = }")
+
+        Args:
+            operator_id: The name of the entity in question
+            id_type: The type of entity class
+
+        Returns:
+            Operator metadata.
+        """
+        url: str = f"{self.resource_path}/{operator_id}"
+        params: Dict[str, Any] = {"idType": id_type.value}
+        operator = self.client.get(url, params=params)
+        return json_to_instance(operator, OperatorType)
+
+    def clients(self, operator_id: str, id_type: IdType) -> Iterator[ClientPercentage]:
         """
         Consensus client distribution
 
@@ -132,7 +122,7 @@ class Operator(APIResource):
             >>> RATED_KEY = "ey..."
             >>> r = Rated(RATED_KEY)
             >>> eth = r.ethereum(network=MAINNET)
-            >>> clients = eth.operator.clients("Lido")
+            >>> clients = eth.operator.clients("Lido", id_type=IdType.POOL)
             >>> for c in clients:
             >>>     print(f"{c.client = }, {c.percentage = }%")
 
@@ -152,8 +142,8 @@ class Operator(APIResource):
     def relayers(
         self,
         operator_id: str,
+        id_type: IdType,
         *,
-        id_type: IdType = IdType.NONE,
         time_window: TimeWindow = TimeWindow.THIRTY_DAYS,
     ) -> Iterator[RelayerPercentage]:
         """
@@ -166,7 +156,7 @@ class Operator(APIResource):
             >>> RATED_KEY = "ey..."
             >>> r = Rated(RATED_KEY)
             >>> eth = r.ethereum(network=MAINNET)
-            >>> relayers = eth.operator.relayers("Lido", time_window=TimeWindow.ALL_TIME)
+            >>> relayers = eth.operator.relayers("Lido", id_type=IdType.POOL, time_window=TimeWindow.ALL_TIME)
             >>> for r in relayers:
             >>>     print(f"{r.relayer = }, {r.percentage = }%")
 
@@ -187,8 +177,8 @@ class Operator(APIResource):
     def apr(
         self,
         operator_id: str,
+        id_type: IdType,
         *,
-        id_type: IdType = IdType.NONE,
         time_window: TimeWindow,
         apr_type: AprType = AprType.BACKWARD,
     ) -> OperatorApr:
@@ -202,7 +192,7 @@ class Operator(APIResource):
             >>> RATED_KEY = "ey..."
             >>> r = Rated(RATED_KEY)
             >>> eth = r.ethereum(network=MAINNET)
-            >>> apr = eth.operator.apr("Lido", time_window=TimeWindow.ALL_TIME)
+            >>> apr = eth.operator.apr("Lido", id_type=IdType.POOL, time_window=TimeWindow.ALL_TIME)
             >>> print(f"{apr.percentage = }%")
 
         Args:
@@ -226,8 +216,8 @@ class Operator(APIResource):
     def summary(
         self,
         operator_id: str,
+        id_type: IdType,
         *,
-        id_type: IdType = IdType.NONE,
         time_window: TimeWindow,
     ) -> OperatorSummary:
         """
@@ -240,7 +230,7 @@ class Operator(APIResource):
             >>> RATED_KEY = "ey..."
             >>> r = Rated(RATED_KEY)
             >>> eth = r.ethereum(network=MAINNET)
-            >>> summary = eth.operator.summary("Lido", time_window=TimeWindow.SEVEN_DAYS)
+            >>> summary = eth.operator.summary("Lido", id_type=IdType.POOL, time_window=TimeWindow.SEVEN_DAYS)
             >>> print(f"{summary.avg_uptime = }%")
 
         Args:
@@ -262,8 +252,8 @@ class Operator(APIResource):
     def stake_movement(
         self,
         operator_id: str,
+        id_type: IdType,
         *,
-        id_type: IdType = IdType.NONE,
         stake_action: StakeAction = StakeAction.ACTIVATION,
         time_window: TimeWindow,
     ) -> Iterator[OperatorStakeMovement]:
@@ -278,7 +268,7 @@ class Operator(APIResource):
             >>> RATED_KEY = "ey..."
             >>> r = Rated(RATED_KEY)
             >>> eth = r.ethereum(network=MAINNET)
-            >>> stake_movement = eth.operator.stake_movement("Lido", time_window=TimeWindow.THIRTY_DAYS)
+            >>> stake_movement = eth.operator.stake_movement("Lido", id_type=IdType.POOL, time_window=TimeWindow.THIRTY_DAYS)
             >>> for mov in stake_movement:
             >>>     print(f"{mov.amount_gwei = }")
 
@@ -308,8 +298,8 @@ class Operators(APIResource):
 
     def percentiles(
         self,
+        id_type: IdType,
         *,
-        id_type: IdType = IdType.NONE,
         time_window: TimeWindow,
     ) -> Iterator[Percentile]:
         """
@@ -322,7 +312,7 @@ class Operators(APIResource):
             >>> RATED_KEY = "ey..."
             >>> r = Rated(RATED_KEY)
             >>> eth = r.ethereum(network=MAINNET)
-            >>> percentiles = eth.operators.percentiles(time_window=TimeWindow.SEVEN_DAYS)
+            >>> percentiles = eth.operators.percentiles(IdType.POOL, time_window=TimeWindow.SEVEN_DAYS)
             >>> for percentile in percentiles:
             >>>     print(f"{percentile.rank = }, {percentile.value = }")
 

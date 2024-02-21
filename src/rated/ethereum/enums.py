@@ -14,7 +14,6 @@ class TimeWindow(str, Enum):
 
 
 class IdType(str, Enum):
-    NONE = None
     DEPOSIT_ADDRESS = "depositAddress"
     WITHDRAWAL_ADDRESS = "withdrawalAddress"
     NODE_OPERATOR = "nodeOperator"
@@ -23,7 +22,6 @@ class IdType(str, Enum):
 
 
 class Granularity(str, Enum):
-    NONE = None
     HOUR = "hour"
     DAY = "day"
     WEEK = "week"

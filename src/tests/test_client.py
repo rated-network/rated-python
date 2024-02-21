@@ -112,3 +112,25 @@ def test_client_raises_on_empty_params(respx_mock):
         )
 
     assert str(exc_info.value) == "Empty query parameters are not allowed"
+
+
+@pytest.mark.parametrize(
+    "status_code",
+    [http.HTTPStatus.PERMANENT_REDIRECT, http.HTTPStatus.TEMPORARY_REDIRECT],
+)
+def test_client_follows_redirects(respx_mock, status_code):
+    rated.client.api_base_url = "https://foo.bar"
+    respx_mock.get("https://foo.bar/v0/health").mock(
+        return_value=httpx.Response(status_code)
+    )
+    c = rated.client.Client("fake_api_key", network="foobar")
+
+    response = c.client.get(
+        "https://foo.bar/v0/health",
+        headers={
+            "Authorization": "Bearer Y",
+            "User-Agent": f"rated-python/{__version__}",
+        },
+    )
+
+    assert response.status_code == status_code

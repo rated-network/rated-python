@@ -194,7 +194,7 @@ class Slashings(APIResource):
             >>> RATED_KEY = "ey..."
             >>> r = Rated(RATED_KEY)
             >>> eth = r.ethereum(network=MAINNET)
-            >>> penalties = eth.slashings.for_validator()
+            >>> penalties = eth.slashings.for_validator("0xb443c10134d35b2f2117b0cd499f0e1755a87329d573a680cec6830fa2f7032f8dc39be33dc75b7a83c2ae70651eb38b")
             >>> print(f"{penalties.slashing_epoch = }, {penalties.slashing_penalties = }")
 
         Args:
