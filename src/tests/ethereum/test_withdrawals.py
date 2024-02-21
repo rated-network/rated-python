@@ -5,7 +5,7 @@ import httpx
 
 def test_withdrawals_by_operator_ok(respx_mock, eth_mainnet):
     respx_mock.get(
-        "https://api.rated.network/v0/eth/withdrawals/predicted/operators/Lido?from=&size=2"
+        "https://api.rated.network/v0/eth/withdrawals/predicted/operators/Lido?size=2"
     ).mock(
         return_value=httpx.Response(
             http.HTTPStatus.OK,

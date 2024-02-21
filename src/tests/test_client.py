@@ -91,3 +91,24 @@ def test_client_raises_on_missing_headers(respx_mock, headers, exc_message):
         c.client.get("https://foo.bar/v0/health", headers=headers)
 
     assert str(exc_info.value) == exc_message
+
+
+def test_client_raises_on_empty_params(respx_mock):
+    rated.client.api_base_url = "https://foo.bar"
+    respx_mock.get("https://foo.bar/v0/health").mock(return_value=httpx.Response(204))
+    c = rated.client.Client("fake_api_key", network="foobar")
+
+    with pytest.raises(ValueError) as exc_info:
+        c.client.get(
+            "https://foo.bar/v0/health",
+            params={
+                "foo": "",
+                "bar": None,
+            },
+            headers={
+                "Authorization": "Bearer Y",
+                "User-Agent": f"rated-python/{__version__}",
+            },
+        )
+
+    assert str(exc_info.value) == "Empty query parameters are not allowed"

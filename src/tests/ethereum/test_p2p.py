@@ -57,7 +57,7 @@ def test_p2p_geographical_distribution_ok(respx_mock, eth_mainnet):
 
 def test_p2p_hosting_provider_distribution_ok(respx_mock, eth_mainnet):
     respx_mock.get(
-        "https://api.rated.network/v0/eth/p2p/hostingProvider?from=&size=2&distType=pros"
+        "https://api.rated.network/v0/eth/p2p/hostingProvider?size=2&distType=pros"
     ).mock(
         return_value=httpx.Response(
             http.HTTPStatus.OK,

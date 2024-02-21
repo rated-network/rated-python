@@ -30,6 +30,11 @@ def check_for_auth_header(request: httpx.Request):
         raise ValueError("Bearer token is missing")
 
 
+def check_for_empty_query_params(request: httpx.Request):
+    if any([not value for value in request.url.params.values()]):
+        raise ValueError("Empty query parameters are not allowed")
+
+
 def raise_on_4xx_5xx(response: httpx.Response):
     try:
         response.raise_for_status()
@@ -60,7 +65,11 @@ class Client:
             base_url=api_base_url,
             follow_redirects=True,
             event_hooks={
-                "request": [check_for_user_agent, check_for_auth_header],
+                "request": [
+                    check_for_user_agent,
+                    check_for_auth_header,
+                    check_for_empty_query_params,
+                ],
                 "response": [raise_on_4xx_5xx],
             },
         )
@@ -76,7 +85,9 @@ class Client:
         Returns:
             JSON data from the response
         """
+        params = kwargs.get("params", {}).copy()
         kwargs["headers"] = self.headers
+        kwargs["params"] = {k: v for k, v in params.items() if v is not None}
         response = self.client.get(*args, **kwargs)
         return response.json()
 
@@ -115,6 +126,8 @@ class Client:
             An iterator over the results of the page
         """
         params_: Dict[str, Any] | None = params.copy() if params else None
+        if params_:
+            params_ = {k: v for k, v in params_.items() if v is not None}
         while True:
             response = self.client.get(url, params=params_, headers=self.headers)
             content = response.json()
