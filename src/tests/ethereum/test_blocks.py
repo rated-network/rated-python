@@ -5,7 +5,7 @@ import pytest
 
 
 def test_blocks_all_ok_dont_follow_next(respx_mock, eth_mainnet):
-    respx_mock.get("https://api.rated.network/v0/eth/blocks").mock(
+    respx_mock.get("https://api.rated.network/v0/eth/blocks?size=1").mock(
         return_value=httpx.Response(
             http.HTTPStatus.OK,
             json={
@@ -54,7 +54,7 @@ def test_blocks_all_ok_dont_follow_next(respx_mock, eth_mainnet):
                         ],
                     }
                 ],
-                "next": "/v0/eth/blocks/?size=10&from=7502092",
+                "next": "/v0/eth/blocks/?size=1&from=7502092",
                 "total": 1,
             },
         )

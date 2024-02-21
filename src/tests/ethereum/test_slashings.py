@@ -37,7 +37,7 @@ def test_slashings_overview_ok(respx_mock, eth_mainnet):
 
 def test_slashings_leaderboard_ok(respx_mock, eth_mainnet):
     respx_mock.get(
-        "https://api.rated.network/v0/eth/slashings/leaderboard?from=&size=1"
+        "https://api.rated.network/v0/eth/slashings/leaderboard?size=1"
     ).mock(
         return_value=httpx.Response(
             http.HTTPStatus.OK,
@@ -142,7 +142,7 @@ def test_slashings_timeseries_ok(respx_mock, eth_mainnet):
 
 
 def test_slashings_penalties_ok(respx_mock, eth_mainnet):
-    respx_mock.get("https://api.rated.network/v0/eth/slashings?from=&size=2").mock(
+    respx_mock.get("https://api.rated.network/v0/eth/slashings?size=2").mock(
         return_value=httpx.Response(
             http.HTTPStatus.OK,
             json={

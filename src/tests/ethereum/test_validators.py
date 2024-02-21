@@ -399,7 +399,7 @@ def test_validators_metadata_response_ok_dont_follow_next(respx_mock, eth_mainne
 
 def test_validators_effectiveness_ok_dont_follow_next(respx_mock, eth_mainnet):
     respx_mock.get(
-        "https://api.rated.network/v0/eth/validators/effectiveness?pubkeys=&indices=100&indices=101&from=&to=&filterType=day&size=1&granularity=month&groupBy=timeWindow"
+        "https://api.rated.network/v0/eth/validators/effectiveness?indices=100&indices=101&filterType=day&size=1&granularity=month&groupBy=timeWindow"
     ).mock(
         return_value=httpx.Response(
             200,
