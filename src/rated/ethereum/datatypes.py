@@ -86,6 +86,7 @@ class ValidatorEffectiveness:
     end_day: int | None = None
     start_epoch: int | None = None
     end_epoch: int | None = None
+    hour: int | None = None
 
 
 @dataclass

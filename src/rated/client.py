@@ -18,6 +18,18 @@ class RatedApiError(Exception):
         self.request_id = response.headers.get("x-request-id")
 
 
+def check_for_user_agent(request: httpx.Request):
+    user_agent = request.headers.get("user-agent")
+    if not user_agent == f"rated-python/{__version__}":
+        raise ValueError(f"User-Agent not valid: {user_agent}")
+
+
+def check_for_auth_header(request: httpx.Request):
+    auth_header = request.headers.get("authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise ValueError("Bearer token is missing")
+
+
 def raise_on_4xx_5xx(response: httpx.Response):
     try:
         response.raise_for_status()
@@ -38,7 +50,7 @@ class Client:
         self.network: str = network
         self.headers = httpx.Headers(
             {
-                "User-Agent": f"rated-python {__version__}",
+                "User-Agent": f"rated-python/{__version__}",
                 "Authorization": f"Bearer {self.api_key}",
                 "X-Rated-Network": self.network,
             }
@@ -47,7 +59,10 @@ class Client:
         self.client = httpx.Client(
             base_url=api_base_url,
             follow_redirects=True,
-            event_hooks={"response": [raise_on_4xx_5xx]},
+            event_hooks={
+                "request": [check_for_user_agent, check_for_auth_header],
+                "response": [raise_on_4xx_5xx],
+            },
         )
 
     def get(self, *args, **kwargs) -> Any:
@@ -101,7 +116,7 @@ class Client:
         """
         params_: Dict[str, Any] | None = params.copy() if params else None
         while True:
-            response = self.client.get(url, params=params_)
+            response = self.client.get(url, params=params_, headers=self.headers)
             content = response.json()
             for item in content["data"]:
                 if cls:
