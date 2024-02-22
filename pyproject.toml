@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rated-python"
-version = "0.0.1"
 authors = [
   { name="Rated Labs", email="hi@rated.network" },
 ]
@@ -16,15 +15,18 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dynamic = ["dependencies", "optional-dependencies"]
+dynamic = ["dependencies", "optional-dependencies", "version"]
 
 [project.urls]
 Homepage = "https://github.com/rated-network/rated-python"
 Issues = "https://github.com/rated-network/rated-python/issues"
+Documentation = "https://rated-network.github.io/rated-python/"
+Repository = "https://github.com/rated-network/rated-python.git"
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 optional-dependencies = {dev = { file = ["requirements-dev.txt"] }}
+version = {attr = "rated.version.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["src"]

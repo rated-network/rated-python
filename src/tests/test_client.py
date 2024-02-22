@@ -47,7 +47,7 @@ def test_get_sends_headers(respx_mock):
     except rated.client.RatedApiError as exc:
         request = exc.response.request
         assert request.headers.get("Authorization") == "Bearer fake_api_key"
-        assert request.headers.get("User-Agent") == "rated-python/0.0.1"
+        assert request.headers.get("User-Agent") == f"rated-python/{__version__}"
 
 
 def test_post_sends_headers(respx_mock):
@@ -60,7 +60,7 @@ def test_post_sends_headers(respx_mock):
     except rated.client.RatedApiError as exc:
         request = exc.response.request
         assert request.headers.get("Authorization") == "Bearer fake_api_key"
-        assert request.headers.get("User-Agent") == "rated-python/0.0.1"
+        assert request.headers.get("User-Agent") == f"rated-python/{__version__}"
 
 
 @pytest.mark.parametrize(
