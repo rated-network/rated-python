@@ -1,4 +1,4 @@
-# Rated Python SDK
+# Rated API Python SDK
 Python bindings for the Rated API
 
 | |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
